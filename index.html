@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Water Management System – Dawlance</title>
+<!-- CONNECT TO CSS FILE -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+</head>
+<body>
+<div class="app">
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sb">
+  <div class="sb-head">
+    <div class="sb-logo-row">
+      <!-- NEW RED LOGO URL INSERTED HERE -->
+      <div class="sb-logo-icon">
+        <img src="https://z-cdn-media.chatglm.cn/files/d830ef0d-c6a6-4214-8045-058708899f4f.png?auth_key=1878472953-f4519b4a0a594695ac37edfe92ac39ad-0-323030c9fcc5666ca96e61f4cd02bf5a" alt="Dawlance Logo">
+      </div>
+      <span class="sb-logo-txt">DAWLANCE</span>
+    </div>
+  </div>
+  <div class="sb-nav">
+    <div class="nav-item active" id="nav-overview" onclick="switchView('overview',this)">
+      <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></div>
+      <span class="nav-name">Overview</span>
+    </div>
+    <div class="nav-item" id="nav-dpl1" onclick="switchView('dpl1',this)">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3.5c0 0-5.5 5.8-5.5 10a5.5 5.5 0 0 0 11 0c0-4.2-5.5-10-5.5-10z"/>
+          <path d="M9.5 15.5c.6 1.1 1.5 1.7 2.9 1.7"/>
+        </svg>
+      </div>
+      <span class="nav-name">DPL 1</span>
+    </div>
+    <div class="nav-item" id="nav-dpl2" onclick="switchView('dpl2',this)">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 21h18"/>
+          <rect x="5" y="9" width="4" height="12" rx="0.5"/>
+          <rect x="10" y="6" width="4" height="15" rx="0.5"/>
+          <rect x="15" y="12" width="4" height="9" rx="0.5"/>
+        </svg>
+      </div>
+      <span class="nav-name">DPL 2</span>
+    </div>
+    <div class="nav-item" id="nav-uril" onclick="switchView('uril',this)">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3"/>
+          <path d="M3 5v4.5c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+          <path d="M3 9.5v4.5c0 1.66 4 3 9 3s9-1.34 9-3V9.5"/>
+          <path d="M3 14v4.5c0 1.66 4 3 9 3s9-1.34 9-3V14"/>
+        </svg>
+      </div>
+      <span class="nav-name">URIL</span>
+    </div>
+    <div class="nav-item" id="nav-review" onclick="switchView('review',this)">
+      <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l1 2h3v16H5V5h3l1-2z"/><path d="M9 12l2 2 4-5"/><path d="M8 18h8"/></svg></div>
+      <span class="nav-name">Review</span>
+    </div>
+  </div>
+  <div class="sb-foot">
+    <div class="sb-online">
+      <div class="pulse"></div>
+      <div class="sb-online-txt"><strong>System Online</strong><span>All meters reporting</span></div>
+    </div>
+  </div>
+</div>
+<!-- ═══ MAIN ═══ -->
+<div class="main-wrap">
+  <div class="topbar">
+    <button class="sb-toggle" onclick="toggleSidebar()">&#9776;</button>
+    <div class="tb-page-title" id="page-title">Overview</div>
+    <div class="tb-wms">Water Management System</div>
+    <div class="tb-spacer"></div>
+    <div class="period-grp">
+      <button class="pbtn active" onclick="setPeriod('td',this)">Till Today</button>
+      <button class="pbtn" onclick="setPeriod('mtd',this)">MTD</button>
+      <button class="pbtn" onclick="setPeriod('ytd',this)">YTD</button>
+    </div>
+    <div class="tb-divider"></div>
+    <div class="live-pill"><div class="pulse" style="width:5px;height:5px"></div>Live</div>
+    <div class="last-updated" id="last-updated">Updated --</div>
+    <button class="notify-btn">&#128276;<span class="notify-dot"></span></button>
+    <div class="clock-box" id="clock">--:--:--</div>
+  </div>
+  <div class="content">
+    <div class="global-filter" id="global-filter">
+      <div class="gf-field"><label class="gf-label">From</label><input class="gf-input" id="from-date" type="date"></div>
+      <div class="gf-field"><label class="gf-label">To</label><input class="gf-input" id="to-date" type="date"></div>
+      <button class="gf-btn" onclick="applyGlobalFilter()">Apply</button>
+      <button class="gf-btn reset" onclick="resetGlobalFilter()">Reset</button>
+    </div>
+
+    <!-- ══ OVERVIEW ══ -->
+    <div class="view active" id="view-overview">
+      <div class="sec-hdr"><div class="sec-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><span class="sec-title">Factory Water Usage</span><div class="sec-line"></div></div>
+      <div class="fac-row">
+        <div class="fac-card" id="fc-dpl1" style="--fc:#38b6ff"><div class="fac-top"><div class="fac-ico">&#127981;</div><span class="fac-name">DPL 1</span></div><div class="fac-val"><span id="fvn-dpl1">9,688</span><span class="fac-unit">m&#179;</span></div><div class="fac-lbl" id="fl-dpl1">Total Water Usage</div><div class="fac-bar-row"><span class="fac-bar-name">Water IN</span><div class="fac-track"><div class="fac-fill" id="fin-bar-dpl1" style="width:88%;background:linear-gradient(90deg,#1558b0,#2d8eee)"></div></div><span class="fac-fval" id="fin-dpl1">9,688</span></div><div class="fac-bar-row"><span class="fac-bar-name">Water OUT</span><div class="fac-track"><div class="fac-fill" id="fob-dpl1" style="width:11%;background:linear-gradient(90deg,#d97706,#f59e0b)"></div></div><span class="fac-fval" id="fout-dpl1">1,093</span></div></div>
+        <div class="fac-card" id="fc-dpl2" style="--fc:#a78bfa"><div class="fac-top"><div class="fac-ico">&#127981;</div><span class="fac-name">DPL 2</span></div><div class="fac-val"><span id="fvn-dpl2">8,420</span><span class="fac-unit">m&#179;</span></div><div class="fac-lbl" id="fl-dpl2">Total Water Usage</div><div class="fac-bar-row"><span class="fac-bar-name">Water IN</span><div class="fac-track"><div class="fac-fill" id="fin-bar-dpl2" style="width:77%;background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div></div><span class="fac-fval" id="fin-dpl2">8,420</span></div><div class="fac-bar-row"><span class="fac-bar-name">Water OUT</span><div class="fac-track"><div class="fac-fill" id="fob-dpl2" style="width:9%;background:linear-gradient(90deg,#d97706,#f59e0b)"></div></div><span class="fac-fval" id="fout-dpl2">948</span></div></div>
+        <div class="fac-card" id="fc-uril" style="--fc:#6ee7b7"><div class="fac-top"><div class="fac-ico">&#127981;</div><span class="fac-name">URIL</span></div><div class="fac-val"><span id="fvn-uril">3,240</span><span class="fac-unit">m&#179;</span></div><div class="fac-lbl" id="fl-uril">Total Water Usage</div><div class="fac-bar-row"><span class="fac-bar-name">Water IN</span><div class="fac-track"><div class="fac-fill" id="fin-bar-uril" style="width:30%;background:linear-gradient(90deg,#0a9e8a,#34d399)"></div></div><span class="fac-fval" id="fin-uril">3,240</span></div><div class="fac-bar-row"><span class="fac-bar-name">Water OUT</span><div class="fac-track"><div class="fac-fill" id="fob-uril" style="width:4%;background:linear-gradient(90deg,#d97706,#f59e0b)"></div></div><span class="fac-fval" id="fout-uril">380</span></div></div>
+      </div>
+      <!-- Overview Water Consumption -->
+      <div class="chart-card">
+        <div class="ov-chart-top">
+          <div><div class="chart-title">Factory Water Comparison</div><div class="chart-sub" id="fcc-sub">Today &middot; 24 Hours</div></div>
+          <div class="ov-chart-right">
+            <div class="factory-tabs" id="fcc-factory-tabs">
+              <button class="ttab active" onclick="setFccFactory('all',this)">All</button>
+              <button class="ttab" onclick="setFccFactory('dpl1',this)">DPL 1</button>
+              <button class="ttab" onclick="setFccFactory('dpl2',this)">DPL 2</button>
+              <button class="ttab" onclick="setFccFactory('uril',this)">URIL</button>
+            </div>
+            <div class="date-selectors" id="fcc-ds">
+              <select class="ds-select" id="fcc-period" onchange="handleDS('fcc')"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select>
+              <div class="ds-sep"></div>
+              <select class="ds-select" id="fcc-week" onchange="handleDS('fcc')" disabled><option value="">Week</option><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option></select>
+              <select class="ds-select" id="fcc-month" onchange="handleDS('fcc')" disabled><option value="">Month</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select>
+              <select class="ds-select" id="fcc-year" onchange="handleDS('fcc')"><option value="">Year</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
+            </div>
+          </div>
+        </div>
+        <div style="position:relative;height:270px"><canvas id="factoryChart"></canvas></div>
+        <div class="chart-legend" id="fcc-legend">
+          <div class="leg"><div class="leg-dot" style="background:#1558b0"></div>Water IN</div>
+          <div class="leg"><div class="leg-dot" style="background:#f59e0b"></div>Water OUT</div>
+        </div>
+      </div>
+      <!-- Overview Recycle -->
+      <div class="rc-card">
+        <div class="rc-hdr">
+          <div class="rc-left"><div class="rc-ico">&#9851;&#65039;</div><div><div class="rc-title">Recycle Rate Comparison</div><div class="rc-sub">Recycle % per factory</div></div></div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+            <div class="factory-tabs" id="ov-rc-factory-tabs">
+              <button class="ttab active" onclick="setOvRcFactory('all',this)">All</button>
+              <button class="ttab" onclick="setOvRcFactory('dpl1',this)">DPL 1</button>
+              <button class="ttab" onclick="setOvRcFactory('dpl2',this)">DPL 2</button>
+              <button class="ttab" onclick="setOvRcFactory('uril',this)">URIL</button>
+            </div>
+            <div class="date-selectors" id="ovrc-ds">
+              <select class="ds-select" id="ovrc-period" onchange="handleDS('ovrc')"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly" selected>Monthly</option><option value="yearly">Yearly</option></select>
+              <div class="ds-sep"></div>
+              <select class="ds-select" id="ovrc-week" onchange="handleDS('ovrc')" disabled><option value="">Week</option><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option></select>
+              <select class="ds-select" id="ovrc-month" onchange="handleDS('ovrc')" disabled><option value="">Month</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select>
+              <select class="ds-select" id="ovrc-year" onchange="handleDS('ovrc')"><option value="">Year</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
+            </div>
+          </div>
+        </div>
+        <div class="rc-badge" id="ov-rc-badge">Monthly &middot; Jan&ndash;Dec 2023</div>
+        <div style="position:relative;height:230px"><canvas id="ovRcChart"></canvas></div>
+        <div class="chart-legend" id="ov-rc-leg"><div class="leg"><div class="leg-dot" style="background:#1558b0"></div>DPL 1</div><div class="leg"><div class="leg-dot" style="background:#7c3aed"></div>DPL 2</div><div class="leg"><div class="leg-dot" style="background:#0a9e8a"></div>URIL</div></div>
+      </div>
+    </div>
+
+    <!-- ══ DPL 1 ══ -->
+    <div class="view" id="view-dpl1">
+      <div class="kpi-grid" id="dpl1-kpi"></div>
+      <div class="live-row">
+        <div class="live-card" style="--lc:#0099bb"><div class="lc-left"><div class="lc-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><div><div class="lc-lbl">Withdraw / Unit</div><div class="lc-live"><div class="lc-dot"></div>Live reading</div></div></div><div class="lc-right"><span class="lc-val" id="live-wpu">0.00</span><span class="lc-unit">m&#179;/h</span></div></div>
+        <div class="live-card" style="--lc:#d97706"><div class="lc-left"><div class="lc-ico" style="background:#d97706"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div><div><div class="lc-lbl">Discharge / Unit</div><div class="lc-live" style="color:#d97706"><div class="lc-dot" style="background:#d97706"></div>Live reading</div></div></div><div class="lc-right"><span class="lc-val" id="live-dpu">0.00</span><span class="lc-unit">m&#179;/h</span></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="meter-btns"><button class="mbtn active" onclick="setMeter('all',this)">&#128202; All Meters</button><button class="mbtn" onclick="setMeter('freshWaterTank',this)">&#128167; Fresh Water Tank</button><button class="mbtn" onclick="setMeter('withdraw',this)">&#128260; Withdraw</button><button class="mbtn" onclick="setMeter('discharge',this)">&#11015;&#65039; Discharge</button></div>
+        <div class="chart-hdr">
+          <div><div class="chart-title" id="bcc-title">Water Consumption Analysis</div><div class="chart-sub" id="bcc-sub">Today &middot; 24 Hours</div></div>
+          <div class="date-selectors" id="bcc-ds">
+            <select class="ds-select" id="bcc-period" onchange="handleDS('bcc')"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select>
+            <div class="ds-sep"></div>
+            <select class="ds-select" id="bcc-week" onchange="handleDS('bcc')" disabled><option value="">Week</option><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option></select>
+            <select class="ds-select" id="bcc-month" onchange="handleDS('bcc')" disabled><option value="">Month</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select>
+            <select class="ds-select" id="bcc-year" onchange="handleDS('bcc')"><option value="">Year</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
+          </div>
+        </div>
+        <div style="position:relative;height:290px"><canvas id="bccChart"></canvas></div>
+        <div class="chart-legend" id="bcc-leg"><div class="leg"><div class="leg-dot" style="background:#1558b0"></div>Fresh Water Tank</div><div class="leg"><div class="leg-dot" style="background:#7c3aed"></div>Withdraw</div><div class="leg"><div class="leg-dot" style="background:#f59e0b"></div>Discharge</div></div>
+      </div>
+      <div class="ms-card">
+        <div class="ms-head"><div><div class="ms-title">Meter Status</div><div class="ms-sub">All flow meters &middot; DPL 1</div></div><div class="ms-cnt"><div class="pulse" style="width:4px;height:4px;display:inline-block;margin-right:4px"></div>8 Devices</div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">Fresh Water Tank</div><div class="ms-desc">Meter 1 &middot; Main intake storage</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">20 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-off-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">Well Water</div><div class="ms-desc">Meter 2 &middot; Well intake pump</div></div><div class="ms-right"><span class="ms-pill ms-pill-off">OFFLINE</span><div class="ms-note warn">&#9888; Maintenance</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">Overhead Tank</div><div class="ms-desc">Meter 3 &middot; Main distribution</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">20 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">Domestic Fresh</div><div class="ms-desc">Meter 4 &middot; Facility supply</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">20 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">Drinking Water &amp; RO Plant</div><div class="ms-desc">Meter 5 &middot; Potable supply + Reverse osmosis</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">20 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">WWTP IN</div><div class="ms-desc">Meter 6 &middot; Wastewater treatment plant inlet</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">20 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-off-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">WWTP RO IN</div><div class="ms-desc">Meter 7 &middot; RO unit feed inlet</div></div><div class="ms-right"><span class="ms-pill ms-pill-off">OFFLINE</span><div class="ms-note warn">&#9888; Calibration</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">WWTP RO Rejection</div><div class="ms-desc">Meter 8 &middot; RO reject stream</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">20 hrs ago</div></div></div>
+      </div>
+      <div class="rc-card">
+        <div class="rc-hdr">
+          <div class="rc-left"><div class="rc-ico">&#9851;&#65039;</div><div><div class="rc-title">Recycle Rate &mdash; DPL 1</div><div class="rc-sub">Recycle as % of Fresh Water Tank intake</div></div></div>
+          <div class="date-selectors" id="rc1-ds">
+            <select class="ds-select" id="rc1-period" onchange="handleDS('rc1')"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly" selected>Monthly</option><option value="yearly">Yearly</option></select>
+            <div class="ds-sep"></div>
+            <select class="ds-select" id="rc1-week" onchange="handleDS('rc1')" disabled><option value="">Week</option><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option></select>
+            <select class="ds-select" id="rc1-month" onchange="handleDS('rc1')" disabled><option value="">Month</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select>
+            <select class="ds-select" id="rc1-year" onchange="handleDS('rc1')"><option value="">Year</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
+          </div>
+        </div>
+        <div class="rc-badge" id="rc1-badge">Monthly &middot; Jan&ndash;Dec 2023</div>
+        <div style="position:relative;height:230px"><canvas id="rcChart"></canvas></div>
+        <div class="chart-legend" style="margin-top:10px"><div class="leg"><div class="leg-dot" style="background:#0eaa60"></div>Recycle %</div></div>
+      </div>
+    </div>
+
+    <!-- ══ DPL 2 ══ -->
+    <div class="view" id="view-dpl2">
+      <div class="kpi-grid" id="dpl2-kpi"></div>
+      <div class="live-row">
+        <div class="live-card" style="--lc:#7c3aed"><div class="lc-left"><div class="lc-ico" style="background:#7c3aed"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><div><div class="lc-lbl">Withdraw / Unit</div><div class="lc-live" style="color:#7c3aed"><div class="lc-dot" style="background:#7c3aed"></div>Live reading</div></div></div><div class="lc-right"><span class="lc-val" id="dpl2-wpu">0.00</span><span class="lc-unit">m&#179;/h</span></div></div>
+        <div class="live-card" style="--lc:#d97706"><div class="lc-left"><div class="lc-ico" style="background:#d97706"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div><div><div class="lc-lbl">Discharge / Unit</div><div class="lc-live" style="color:#d97706"><div class="lc-dot" style="background:#d97706"></div>Live reading</div></div></div><div class="lc-right"><span class="lc-val" id="dpl2-dpu">0.00</span><span class="lc-unit">m&#179;/h</span></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="meter-btns"><button class="mbtn active" onclick="setMeter2('all',this)">&#128202; All Meters</button><button class="mbtn" onclick="setMeter2('freshWaterTank',this)">&#128167; Fresh Water Tank</button><button class="mbtn" onclick="setMeter2('withdraw',this)">&#128260; Withdraw</button><button class="mbtn" onclick="setMeter2('discharge',this)">&#11015;&#65039; Discharge</button></div>
+        <div class="chart-hdr">
+          <div><div class="chart-title" id="bcc2-title">Water Consumption Analysis</div><div class="chart-sub" id="bcc2-sub">Today &middot; 24 Hours</div></div>
+          <div class="date-selectors" id="bcc2-ds">
+            <select class="ds-select" id="bcc2-period" onchange="handleDS('bcc2')"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select>
+            <div class="ds-sep"></div>
+            <select class="ds-select" id="bcc2-week" onchange="handleDS('bcc2')" disabled><option value="">Week</option><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option></select>
+            <select class="ds-select" id="bcc2-month" onchange="handleDS('bcc2')" disabled><option value="">Month</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select>
+            <select class="ds-select" id="bcc2-year" onchange="handleDS('bcc2')"><option value="">Year</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
+          </div>
+        </div>
+        <div style="position:relative;height:290px"><canvas id="dpl2BccChart"></canvas></div>
+        <div class="chart-legend" id="bcc2-leg"><div class="leg"><div class="leg-dot" style="background:#1558b0"></div>Fresh Water Tank</div><div class="leg"><div class="leg-dot" style="background:#7c3aed"></div>Withdraw</div><div class="leg"><div class="leg-dot" style="background:#f59e0b"></div>Discharge</div></div>
+      </div>
+      <div class="ms-card">
+        <div class="ms-head"><div><div class="ms-title">Meter Status</div><div class="ms-sub">All flow meters &middot; DPL 2</div></div><div class="ms-cnt"><div class="pulse" style="width:4px;height:4px;display:inline-block;margin-right:4px"></div>8 Devices</div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">Fresh Water Tank</div><div class="ms-desc">Meter 1 &middot; Main intake storage</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">18 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">Well Water</div><div class="ms-desc">Meter 2 &middot; Well intake pump</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">18 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">Overhead Tank</div><div class="ms-desc">Meter 3 &middot; Main distribution</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">18 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-off-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">Domestic Fresh</div><div class="ms-desc">Meter 4 &middot; Facility supply</div></div><div class="ms-right"><span class="ms-pill ms-pill-off">OFFLINE</span><div class="ms-note warn">&#9888; Calibration</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">Drinking Water &amp; RO Plant</div><div class="ms-desc">Meter 5 &middot; Potable supply + Reverse osmosis</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">18 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">WWTP IN</div><div class="ms-desc">Meter 6 &middot; Wastewater treatment plant inlet</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">18 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">WWTP RO IN</div><div class="ms-desc">Meter 7 &middot; RO unit feed inlet</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">18 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">WWTP RO Rejection</div><div class="ms-desc">Meter 8 &middot; RO reject stream</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">18 hrs ago</div></div></div>
+      </div>
+      <div class="rc-card">
+        <div class="rc-hdr">
+          <div class="rc-left"><div class="rc-ico">&#9851;&#65039;</div><div><div class="rc-title">Recycle Rate &mdash; DPL 2</div><div class="rc-sub">Recycle % of Fresh Water Tank intake</div></div></div>
+          <div class="date-selectors" id="rc2-ds">
+            <select class="ds-select" id="rc2-period" onchange="handleDS('rc2')"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly" selected>Monthly</option><option value="yearly">Yearly</option></select>
+            <div class="ds-sep"></div>
+            <select class="ds-select" id="rc2-week" onchange="handleDS('rc2')" disabled><option value="">Week</option><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option></select>
+            <select class="ds-select" id="rc2-month" onchange="handleDS('rc2')" disabled><option value="">Month</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select>
+            <select class="ds-select" id="rc2-year" onchange="handleDS('rc2')"><option value="">Year</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
+          </div>
+        </div>
+        <div class="rc-badge" id="rc2-badge">Monthly &middot; Jan&ndash;Dec 2023</div>
+        <div style="position:relative;height:230px"><canvas id="dpl2RcChart"></canvas></div>
+        <div class="chart-legend" style="margin-top:10px"><div class="leg"><div class="leg-dot" style="background:#0eaa60"></div>Recycle %</div></div>
+      </div>
+    </div>
+
+    <!-- ══ URIL ══ -->
+    <div class="view" id="view-uril">
+      <div class="kpi-grid" id="uril-kpi"></div>
+      <div class="live-row">
+        <div class="live-card" style="--lc:#0a9e8a"><div class="lc-left"><div class="lc-ico" style="background:#0a9e8a"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><div><div class="lc-lbl">Withdraw / Unit</div><div class="lc-live" style="color:#0a9e8a"><div class="lc-dot" style="background:#0a9e8a"></div>Live reading</div></div></div><div class="lc-right"><span class="lc-val" id="uril-wpu">0.00</span><span class="lc-unit">m&#179;/h</span></div></div>
+        <div class="live-card" style="--lc:#d97706"><div class="lc-left"><div class="lc-ico" style="background:#d97706"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div><div><div class="lc-lbl">Discharge / Unit</div><div class="lc-live" style="color:#d97706"><div class="lc-dot" style="background:#d97706"></div>Live reading</div></div></div><div class="lc-right"><span class="lc-val" id="uril-dpu">0.00</span><span class="lc-unit">m&#179;/h</span></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="meter-btns"><button class="mbtn active" onclick="setMeterU('all',this)">&#128202; All Meters</button><button class="mbtn" onclick="setMeterU('freshWaterTank',this)">&#128167; Fresh Water Tank</button><button class="mbtn" onclick="setMeterU('withdraw',this)">&#128260; Withdraw</button><button class="mbtn" onclick="setMeterU('discharge',this)">&#11015;&#65039; Discharge</button></div>
+        <div class="chart-hdr">
+          <div><div class="chart-title" id="bccU-title">Water Consumption Analysis</div><div class="chart-sub" id="bccU-sub">Today &middot; 24 Hours</div></div>
+          <div class="date-selectors" id="bccU-ds">
+            <select class="ds-select" id="bccU-period" onchange="handleDS('bccU')"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select>
+            <div class="ds-sep"></div>
+            <select class="ds-select" id="bccU-week" onchange="handleDS('bccU')" disabled><option value="">Week</option><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option></select>
+            <select class="ds-select" id="bccU-month" onchange="handleDS('bccU')" disabled><option value="">Month</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select>
+            <select class="ds-select" id="bccU-year" onchange="handleDS('bccU')"><option value="">Year</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
+          </div>
+        </div>
+        <div style="position:relative;height:290px"><canvas id="urilBccChart"></canvas></div>
+        <div class="chart-legend" id="bccU-leg"><div class="leg"><div class="leg-dot" style="background:#1558b0"></div>Fresh Water Tank</div><div class="leg"><div class="leg-dot" style="background:#0a9e8a"></div>Withdraw</div><div class="leg"><div class="leg-dot" style="background:#f59e0b"></div>Discharge</div></div>
+      </div>
+      <div class="ms-card">
+        <div class="ms-head"><div><div class="ms-title">Meter Status</div><div class="ms-sub">All flow meters &middot; URIL</div></div><div class="ms-cnt"><div class="pulse" style="width:4px;height:4px;display:inline-block;margin-right:4px"></div>8 Devices</div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">Fresh Water Tank</div><div class="ms-desc">Meter 1 &middot; Main intake storage</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">12 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">Well Water</div><div class="ms-desc">Meter 2 &middot; Well intake pump</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">12 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">Main Supply</div><div class="ms-desc">Meter 3 &middot; Primary intake</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">12 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">Process Water</div><div class="ms-desc">Meter 4 &middot; Manufacturing line</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">12 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">Drinking Water &amp; RO Plant</div><div class="ms-desc">Meter 5 &middot; Potable supply + Reverse osmosis</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">12 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-off-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">WWTP IN</div><div class="ms-desc">Meter 6 &middot; Wastewater treatment plant inlet</div></div><div class="ms-right"><span class="ms-pill ms-pill-off">OFFLINE</span><div class="ms-note warn">&#9888; Maintenance</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">WWTP RO IN</div><div class="ms-desc">Meter 7 &middot; RO unit feed inlet</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">12 hrs ago</div></div></div>
+        <div class="ms-row"><div class="ms-dot ms-on-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-info"><div class="ms-name">WWTP RO Rejection</div><div class="ms-desc">Meter 8 &middot; RO reject stream</div></div><div class="ms-right"><span class="ms-pill ms-pill-on">ONLINE</span><div class="ms-note">12 hrs ago</div></div></div>
+      </div>
+      <div class="rc-card">
+        <div class="rc-hdr">
+          <div class="rc-left"><div class="rc-ico">&#9851;&#65039;</div><div><div class="rc-title">Recycle Rate &mdash; URIL</div><div class="rc-sub">Recycle % of Fresh Water Tank intake</div></div></div>
+          <div class="date-selectors" id="rcU-ds">
+            <select class="ds-select" id="rcU-period" onchange="handleDS('rcU')"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly" selected>Monthly</option><option value="yearly">Yearly</option></select>
+            <div class="ds-sep"></div>
+            <select class="ds-select" id="rcU-week" onchange="handleDS('rcU')" disabled><option value="">Week</option><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option></select>
+            <select class="ds-select" id="rcU-month" onchange="handleDS('rcU')" disabled><option value="">Month</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select>
+            <select class="ds-select" id="rcU-year" onchange="handleDS('rcU')"><option value="">Year</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
+          </div>
+        </div>
+        <div class="rc-badge" id="rcU-badge">Monthly &middot; Jan&ndash;Dec 2023</div>
+        <div style="position:relative;height:230px"><canvas id="urilRcChart"></canvas></div>
+        <div class="chart-legend" style="margin-top:10px"><div class="leg"><div class="leg-dot" style="background:#0eaa60"></div>Recycle %</div></div>
+      </div>
+    </div>
+
+    <!-- ══ REVIEW ══ -->
+    <div class="view" id="view-review">
+      <div class="rev-top-bar">
+        <div class="rev-plant-selector">
+          <button class="rev-plant-btn active" id="rev-btn-dpl1" onclick="setRevPlant('dpl1',this)"><div class="rev-plant-ico">&#128167;</div><div><div class="rev-plant-name">DPL 1</div><div class="rev-plant-sub">Plant Summary</div></div></button>
+          <button class="rev-plant-btn" id="rev-btn-dpl2" onclick="setRevPlant('dpl2',this)"><div class="rev-plant-ico" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div><div><div class="rev-plant-name">DPL 2</div><div class="rev-plant-sub">Plant Summary</div></div></button>
+          <button class="rev-plant-btn" id="rev-btn-uril" onclick="setRevPlant('uril',this)"><div class="rev-plant-ico" style="background:linear-gradient(135deg,#0a9e8a,#34d399)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div><div><div class="rev-plant-name">URIL</div><div class="rev-plant-sub">Plant Summary</div></div></button>
+        </div>
+        <div class="rev-controls">
+          <div class="rev-year-wrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1558b0" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><select id="rev-year-sel" class="rev-year-select" onchange="setRevYear(this.value)"><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option></select></div>
+          <button class="rev-download-btn" onclick="downloadRevPdf()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download PDF</button>
+        </div>
+      </div>
+      <div id="rev-content"></div>
+    </div>
+  </div>
+</div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
